@@ -13,6 +13,7 @@
 输出：results.csv（逐条结果）+ 控制台汇总
 """
 
+import argparse
 import csv
 import os
 import re
@@ -22,6 +23,7 @@ from datetime import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 EVAL_SET = os.path.join(HERE, "eval_set.csv")
+BLIND_SET = os.path.join(HERE, "blind_set.csv")
 RESULTS = os.path.join(HERE, "results.csv")
 SKILL = os.path.join(HERE, "..", "01_skill", "xhs-seeding.skill.md")
 
@@ -42,8 +44,8 @@ BANNED_WORDS = [
 HIGH_RISK_CATEGORIES = ["胶原蛋白", "褪黑素", "钙片", "代餐", "祛痘", "理财", "保健品"]
 
 # ---------- D2 结构检查阈值 ----------
-MIN_CHARS, MAX_CHARS = 150, 800
-MIN_TAGS, MAX_TAGS = 3, 8
+MIN_CHARS, MAX_CHARS = 300, 500
+MIN_TAGS, MAX_TAGS = 5, 8
 
 
 def load_skill(path):
@@ -134,12 +136,18 @@ def check_d2(text, row):
 
 
 def main():
-    if not os.path.exists(EVAL_SET):
-        sys.exit(f"找不到评测集：{EVAL_SET}")
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--set", default="main", choices=["main", "blind"],
+                    help="main=调优用评测集（24条）  blind=盲测集（只跑不调）")
+    args, _ = ap.parse_known_args()
+
+    path = BLIND_SET if args.set == "blind" else EVAL_SET
+    if not os.path.exists(path):
+        sys.exit(f"找不到评测集：{path}")
 
     skill_text = load_skill(SKILL)
-    rows = list(csv.DictReader(open(EVAL_SET, encoding="utf-8-sig")))
-    print(f"载入 {len(rows)} 条用例 | Skill: {os.path.basename(SKILL)}")
+    rows = list(csv.DictReader(open(path, encoding="utf-8-sig")))
+    print(f"[{args.set}] 载入 {len(rows)} 条用例 | Skill: {os.path.basename(SKILL)}")
     print(f"模型：{os.getenv('MODEL', '未配置（干跑）')}\n")
 
     out, total, passed = [], 0, 0

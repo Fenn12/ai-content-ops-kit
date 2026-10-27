@@ -2,7 +2,12 @@
 
 把小红书种草内容生产，从「靠人工手感」变成「可评测、可迭代、可复用」的流水线。
 
+> **English abstract** — A skill-definition and evaluation kit for Xiaohongshu seeding copy. It packages rules into a reusable Skill, guards changes with a 24-case eval set plus a 10-case blind set, and keeps an iteration log that records side effects, not just improvements. Deterministic checks only; semantic scoring is left to human review.
+
 > 本仓库为个人方法论沉淀，脱敏自真实品牌内容运营项目。**不含任何公司内部数据、素材、投放策略或商业信息**；所有指标为脱敏区间，仅用于说明方法有效性。
+
+> **能力边界，先说清楚**：本仓库提供的是**确定性检查骨架**——字数、禁用词、标签数、结构关键词。它**不是**完整的语义评测：D1 场景具体度、D4 语言自然度仍需人工或 LLM judge。
+> 把它当「评测体系」会高估它，把它当「改动前的回归护栏」才准确。
 
 ---
 
@@ -28,7 +33,8 @@ ai-content-ops-kit/
 │   ├── xhs-seeding.skill.md     # 一个完整的 Skill 定义（可直接改）
 │   └── skill-spec.md            # Skill 编写规范：什么该写进 Skill，什么不该
 ├── 02_eval/
-│   ├── eval_set.csv             # 24 条评测用例（覆盖正常流 / 边界 / 风险）
+│   ├── eval_set.csv             # 24 条调优用评测用例（正常流 / 边界 / 风险）
+│   ├── blind_set.csv            # 10 条盲测用例：只看不调，防止过拟合
 │   ├── rubric.md                # 5 维评分标准与锚点
 │   └── run_eval.py              # 跑分脚本，无依赖即可运行
 ├── 03_reports/
@@ -57,6 +63,9 @@ cd ai-content-ops-kit
 
 # 干跑：只做确定性检查，不需要 API key
 python 02_eval/run_eval.py
+
+# 盲测集：只用来验收，不参与调优
+python 02_eval/run_eval.py --set blind
 
 # 接模型实跑（任意 OpenAI 兼容接口）
 export OPENAI_API_KEY=sk-xxx
