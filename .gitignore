@@ -1,0 +1,16 @@
+# 评测输出（每次跑都会重新生成）
+02_eval/results.csv
+
+# 环境与密钥
+.env
+.env.*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 系统
+.DS_Store
+Thumbs.db
