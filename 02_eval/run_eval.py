@@ -75,7 +75,7 @@ def call_model(system, user):
     """调模型。未配置 API key 时返回占位文本，用于干跑。"""
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
-        return "【干跑模式：未配置 OPENAI_API_KEY，此处为占位输出】"
+        return "【干跑模式：未配置 OPENAI_API_KEY，本次不调用模型】"
 
     try:
         from openai import OpenAI
